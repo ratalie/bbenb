@@ -4,6 +4,8 @@ import { ChatMessage, Message } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { SuggestedPrompts } from "./SuggestedPrompts";
 import { getMockResponse } from "./mockResponses";
+import { brotherBenApi } from "../../services/brotherBenApi";
+import { toast } from "sonner";
 
 interface ChatScreenProps {
   onShowOnboarding: () => void;
@@ -12,7 +14,18 @@ interface ChatScreenProps {
 export function ChatScreen({ onShowOnboarding }: ChatScreenProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string | undefined>(undefined);
+  const [userId] = useState(() => {
+    // Generate or retrieve user ID from localStorage
+    let id = localStorage.getItem('brother-ben-user-id');
+    if (!id) {
+      id = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem('brother-ben-user-id', id);
+    }
+    return id;
+  });
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [useRealApi, setUseRealApi] = useState(true); // Toggle for testing
 
   const scrollToBottom = () => {
     if (scrollRef.current) {
@@ -35,26 +48,85 @@ export function ChatScreen({ onShowOnboarding }: ChatScreenProps) {
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
-    // Simulate AI response delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      if (useRealApi) {
+        // Call real Brother Ben API
+        const response = await brotherBenApi.chat({
+          message: content,
+          user_id: userId,
+          session_id: sessionId,
+          user_context: {
+            role: 'member' // Default role, can be customized
+          }
+        });
 
-    const mockResponse = getMockResponse(content);
-    
-    const assistantMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      role: "assistant",
-      content: mockResponse.content || "",
-      scripture: mockResponse.scripture,
-      resources: mockResponse.resources,
-      timestamp: new Date()
-    };
+        // Update session ID for conversation continuity
+        if (response.session_id) {
+          setSessionId(response.session_id);
+        }
 
-    setMessages(prev => [...prev, assistantMessage]);
-    setIsLoading(false);
+        // Convert resources to expected format
+        const resources = response.sources?.map(source => ({
+          title: source.title,
+          url: source.url,
+          type: source.type
+        }));
+
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: response.response,
+          scripture: response.scripture,
+          resources: resources,
+          timestamp: new Date()
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+
+        // Show notification if escalated
+        if (response.escalated) {
+          toast.info("Brother Ben recommends reaching out to ACCFS for additional support.");
+        }
+      } else {
+        // Fallback to mock responses for testing
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        const mockResponse = getMockResponse(content);
+
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: mockResponse.content || "",
+          scripture: mockResponse.scripture,
+          resources: mockResponse.resources,
+          timestamp: new Date()
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+      }
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to connect to Brother Ben');
+
+      // Fallback to mock response on error
+      const mockResponse = getMockResponse(content);
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: mockResponse.content || "I'm having trouble connecting right now. Please try again in a moment.",
+        scripture: mockResponse.scripture,
+        resources: mockResponse.resources,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, assistantMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleReset = () => {
     setMessages([]);
+    setSessionId(undefined); // Clear session for new conversation
   };
 
   return (
