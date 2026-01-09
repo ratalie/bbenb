@@ -1,0 +1,20 @@
+Brother Ben Frontend - AWS Amplify Info
+=========================================
+
+App ID: dufeqdaks6ix1
+Default Domain: https://main.dufeqdaks6ix1.amplifyapp.com
+Region: us-east-1
+Account: 124355682808 (gpbible)
+
+Amplify Console Link:
+https://console.aws.amazon.com/amplify/home?region=us-east-1#/dufeqdaks6ix1
+
+Environment Variables (Already Configured):
+VITE_API_BASE_URL=https://v6nfnsyr8f.execute-api.us-east-1.amazonaws.com/prod
+
+Next Steps:
+1. Open the Amplify Console link above
+2. Click "Connect repository" or "Host web app"
+3. Select GitHub → ratalie/bbenb → main branch
+4. The app will auto-deploy
+5. Your frontend will be live at: https://main.dufeqdaks6ix1.amplifyapp.com
