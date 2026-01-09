@@ -4,7 +4,6 @@ import { ChatMessage, Message } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { SuggestedPrompts } from "./SuggestedPrompts";
 import { getMockResponse } from "./mockResponses";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ChatScreenProps {
   onShowOnboarding: () => void;
@@ -62,7 +61,7 @@ export function ChatScreen({ onShowOnboarding }: ChatScreenProps) {
     <div className="h-screen flex flex-col bg-background">
       <ChatHeader onReset={handleReset} onShowOnboarding={onShowOnboarding} />
       
-      <ScrollArea className="flex-1" ref={scrollRef}>
+      <div className="flex-1 overflow-y-auto" ref={scrollRef}>
         <div className="max-w-3xl mx-auto px-4 py-6">
           {messages.length === 0 ? (
             <SuggestedPrompts onSelect={handleSend} />
@@ -88,7 +87,7 @@ export function ChatScreen({ onShowOnboarding }: ChatScreenProps) {
             </div>
           )}
         </div>
-      </ScrollArea>
+      </div>
 
       <ChatInput onSend={handleSend} isLoading={isLoading} />
     </div>
