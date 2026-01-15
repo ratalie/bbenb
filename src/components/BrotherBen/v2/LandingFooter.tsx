@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
@@ -5,9 +6,10 @@ interface LandingFooterProps {
   onStartConversation: () => void;
 }
 
-export const LandingFooter = ({ onStartConversation }: LandingFooterProps) => {
-  return (
-    <footer className="border-t border-border">
+export const LandingFooter = forwardRef<HTMLElement, LandingFooterProps>(
+  ({ onStartConversation }, ref) => {
+    return (
+      <footer ref={ref} className="border-t border-border">
       {/* CTA Section */}
       <div className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-primary/5">
         <div className="max-w-2xl mx-auto text-center">
@@ -73,6 +75,9 @@ export const LandingFooter = ({ onStartConversation }: LandingFooterProps) => {
           </div>
         </div>
       </div>
-    </footer>
-  );
-};
+      </footer>
+    );
+  }
+);
+
+LandingFooter.displayName = "LandingFooter";
