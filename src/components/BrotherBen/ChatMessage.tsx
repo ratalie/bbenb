@@ -1,6 +1,9 @@
 import { cn } from "@/lib/utils";
-import { BookOpen, ExternalLink } from "lucide-react";
+import { BookOpen, ExternalLink, ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 export interface Message {
   id: string;
@@ -20,10 +23,28 @@ export interface Message {
 
 interface ChatMessageProps {
   message: Message;
+  onFeedback?: (messageId: string, type: "up" | "down", note?: string) => void;
 }
 
-export function ChatMessage({ message }: ChatMessageProps) {
+export function ChatMessage({ message, onFeedback }: ChatMessageProps) {
   const isUser = message.role === "user";
+  const [feedbackGiven, setFeedbackGiven] = useState<"up" | "down" | null>(null);
+  const [showFeedbackInput, setShowFeedbackInput] = useState(false);
+  const [feedbackNote, setFeedbackNote] = useState("");
+
+  const handleFeedback = (type: "up" | "down") => {
+    setFeedbackGiven(type);
+    if (type === "down") {
+      setShowFeedbackInput(true);
+    } else {
+      onFeedback?.(message.id, type);
+    }
+  };
+
+  const handleSubmitFeedback = () => {
+    onFeedback?.(message.id, feedbackGiven!, feedbackNote || undefined);
+    setShowFeedbackInput(false);
+  };
 
   return (
     <motion.div
@@ -86,6 +107,63 @@ export function ChatMessage({ message }: ChatMessageProps) {
                 <ExternalLink className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-colors" />
               </a>
             ))}
+          </div>
+        )}
+
+        {/* Feedback buttons (assistant only) */}
+        {!isUser && (
+          <div className="pt-2 border-t border-border/50">
+            {!feedbackGiven ? (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">Was this helpful?</span>
+                <button
+                  onClick={() => handleFeedback("up")}
+                  className="p-1.5 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-green-600"
+                  aria-label="Helpful"
+                >
+                  <ThumbsUp className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleFeedback("down")}
+                  className="p-1.5 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-red-500"
+                  aria-label="Not helpful"
+                >
+                  <ThumbsDown className="w-4 h-4" />
+                </button>
+              </div>
+            ) : showFeedbackInput ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>What could be improved? (optional)</span>
+                </div>
+                <Textarea
+                  placeholder="Share your thoughts..."
+                  value={feedbackNote}
+                  onChange={(e) => setFeedbackNote(e.target.value)}
+                  className="min-h-[60px] text-sm resize-none"
+                />
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={() => setShowFeedbackInput(false)}>
+                    Skip
+                  </Button>
+                  <Button size="sm" onClick={handleSubmitFeedback}>
+                    Submit
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span className={feedbackGiven === "up" ? "text-green-600" : "text-red-500"}>
+                  {feedbackGiven === "up" ? (
+                    <ThumbsUp className="w-4 h-4 inline mr-1" />
+                  ) : (
+                    <ThumbsDown className="w-4 h-4 inline mr-1" />
+                  )}
+                </span>
+                <span>Thanks for your feedback!</span>
+              </div>
+            )}
           </div>
         )}
 
