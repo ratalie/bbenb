@@ -48,14 +48,14 @@ export function SuggestedPrompts({ onSelect }: SuggestedPromptsProps) {
             <Button
               key={index}
               variant="outline"
-              className="h-auto p-4 flex flex-col items-start gap-2 text-left hover:bg-secondary/50 hover:border-primary/30 transition-all"
+              className="h-auto p-4 flex flex-col items-start gap-2 text-left hover:bg-secondary/50 hover:border-primary/30 transition-all overflow-hidden w-full"
               onClick={() => onSelect(suggestion.prompt)}
             >
-              <div className="flex items-center gap-2">
-                <Icon className="w-4 h-4 text-primary" />
-                <span className="font-medium text-foreground">{suggestion.label}</span>
+              <div className="flex items-center gap-2 w-full min-w-0">
+                <Icon className="w-4 h-4 text-primary flex-shrink-0" />
+                <span className="font-medium text-foreground truncate">{suggestion.label}</span>
               </div>
-              <span className="text-xs text-muted-foreground line-clamp-2">
+              <span className="text-xs text-muted-foreground line-clamp-2 w-full break-words">
                 {suggestion.prompt}
               </span>
             </Button>
