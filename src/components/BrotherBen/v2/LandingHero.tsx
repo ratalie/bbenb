@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { MessageCircle, Send } from "lucide-react";
+import { MessageCircle, Send, FlaskConical } from "lucide-react";
 
 interface LandingHeroProps {
   onStartConversation: () => void;
@@ -29,10 +29,19 @@ export const LandingHero = ({ onStartConversation, onGiveFeedback }: LandingHero
             A calm, supportive spiritual companion for reflection, encouragement, and next steps.
           </p>
 
-          <div className="bg-muted/50 rounded-lg p-4 mb-8 max-w-xl mx-auto">
-            <p className="text-sm text-muted-foreground">
-              This is a <strong>beta experience</strong> focused on testing the model. 
-              The design is intentionally simple and will evolve based on your feedback.
+          {/* Prominent Beta Notice */}
+          <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-6 mb-8 max-w-2xl mx-auto">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <FlaskConical className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              <h2 className="font-semibold text-amber-800 dark:text-amber-200">
+                This is a Beta Experience
+              </h2>
+            </div>
+            <p className="text-sm text-amber-700 dark:text-amber-300 mb-3">
+              <strong>Our primary goal right now is testing the AI model</strong>—how helpful, accurate, and spiritually grounded Brother Ben's responses are.
+            </p>
+            <p className="text-sm text-amber-600 dark:text-amber-400">
+              The interface you see is intentionally simple. It will be updated and improved based on what we learn from your feedback.
             </p>
           </div>
 
