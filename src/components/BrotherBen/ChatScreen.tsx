@@ -65,11 +65,11 @@ export function ChatScreen({ onShowOnboarding }: ChatScreenProps) {
           setSessionId(response.session_id);
         }
 
-        // Convert resources to expected format
+        // Convert resources to expected format with type assertion
         const resources = response.sources?.map(source => ({
           title: source.title,
           url: source.url,
-          type: source.type
+          type: source.type as "article" | "podcast" | "sermon" | "video"
         }));
 
         const assistantMessage: Message = {
