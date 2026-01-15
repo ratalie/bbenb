@@ -6,6 +6,18 @@ import { SuggestedPrompts } from "./SuggestedPrompts";
 import { getMockResponse } from "./mockResponses";
 import { brotherBenApi } from "../../services/brotherBenApi";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Send, CheckCircle } from "lucide-react";
 
 interface ChatScreenProps {
   onShowOnboarding: () => void;
@@ -26,6 +38,12 @@ export function ChatScreen({ onShowOnboarding }: ChatScreenProps) {
   });
   const scrollRef = useRef<HTMLDivElement>(null);
   const [useRealApi, setUseRealApi] = useState(true); // Toggle for testing
+
+  // Feedback modal state
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackForm, setFeedbackForm] = useState({ name: "", email: "", message: "" });
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
 
   const scrollToBottom = () => {
     if (scrollRef.current) {
@@ -129,6 +147,24 @@ export function ChatScreen({ onShowOnboarding }: ChatScreenProps) {
     setSessionId(undefined); // Clear session for new conversation
   };
 
+  const handleOpenFeedbackModal = () => {
+    setShowFeedbackModal(true);
+    setFeedbackSubmitted(false);
+    setFeedbackForm({ name: "", email: "", message: "" });
+  };
+
+  const handleSubmitFeedback = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!feedbackForm.message.trim()) return;
+
+    setFeedbackSubmitting(true);
+    // Mock submission delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setFeedbackSubmitting(false);
+    setFeedbackSubmitted(true);
+    toast.success("Thank you for your feedback!");
+  };
+
   return (
     <div className="h-screen flex flex-col bg-background">
       <ChatHeader onReset={handleReset} onShowOnboarding={onShowOnboarding} />
@@ -140,7 +176,11 @@ export function ChatScreen({ onShowOnboarding }: ChatScreenProps) {
           ) : (
             <div className="space-y-4">
               {messages.map(message => (
-                <ChatMessage key={message.id} message={message} />
+                <ChatMessage 
+                  key={message.id} 
+                  message={message} 
+                  onProvideFeedback={handleOpenFeedbackModal}
+                />
               ))}
               {isLoading && (
                 <div className="flex justify-start">
@@ -162,6 +202,93 @@ export function ChatScreen({ onShowOnboarding }: ChatScreenProps) {
       </div>
 
       <ChatInput onSend={handleSend} isLoading={isLoading} />
+
+      {/* Feedback Modal */}
+      <Dialog open={showFeedbackModal} onOpenChange={setShowFeedbackModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-serif">Share your feedback</DialogTitle>
+            <DialogDescription>
+              Your thoughts help us make Brother Ben more helpful and supportive.
+            </DialogDescription>
+          </DialogHeader>
+
+          {feedbackSubmitted ? (
+            <div className="text-center py-6">
+              <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-3">
+                <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-1">
+                Thank you!
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Your feedback helps us improve Brother Ben.
+              </p>
+              <Button variant="outline" onClick={() => setShowFeedbackModal(false)}>
+                Close
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmitFeedback} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="feedback-name" className="text-sm">
+                    Name <span className="text-muted-foreground">(optional)</span>
+                  </Label>
+                  <Input
+                    id="feedback-name"
+                    type="text"
+                    placeholder="Your name"
+                    value={feedbackForm.name}
+                    onChange={(e) => setFeedbackForm({ ...feedbackForm, name: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="feedback-email" className="text-sm">
+                    Email <span className="text-muted-foreground">(optional)</span>
+                  </Label>
+                  <Input
+                    id="feedback-email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={feedbackForm.email}
+                    onChange={(e) => setFeedbackForm({ ...feedbackForm, email: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="feedback-message" className="text-sm">
+                  Message <span className="text-destructive">*</span>
+                </Label>
+                <Textarea
+                  id="feedback-message"
+                  placeholder="Share your thoughts, suggestions, or experiences..."
+                  value={feedbackForm.message}
+                  onChange={(e) => setFeedbackForm({ ...feedbackForm, message: e.target.value })}
+                  className="min-h-[100px] resize-none"
+                  required
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full gap-2"
+                disabled={!feedbackForm.message.trim() || feedbackSubmitting}
+              >
+                {feedbackSubmitting ? (
+                  <>Sending...</>
+                ) : (
+                  <>
+                    <Send size={16} />
+                    Send feedback
+                  </>
+                )}
+              </Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { BookOpen, ExternalLink, ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
+import { BookOpen, ExternalLink, ThumbsUp, ThumbsDown, MessageSquare, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -24,9 +24,10 @@ export interface Message {
 interface ChatMessageProps {
   message: Message;
   onFeedback?: (messageId: string, type: "up" | "down", note?: string) => void;
+  onProvideFeedback?: () => void;
 }
 
-export function ChatMessage({ message, onFeedback }: ChatMessageProps) {
+export function ChatMessage({ message, onFeedback, onProvideFeedback }: ChatMessageProps) {
   const isUser = message.role === "user";
   const [feedbackGiven, setFeedbackGiven] = useState<"up" | "down" | null>(null);
   const [showFeedbackInput, setShowFeedbackInput] = useState(false);
@@ -114,7 +115,7 @@ export function ChatMessage({ message, onFeedback }: ChatMessageProps) {
         {!isUser && (
           <div className="pt-2 border-t border-border/50">
             {!feedbackGiven ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs text-muted-foreground">Was this helpful?</span>
                 <button
                   onClick={() => handleFeedback("up")}
@@ -129,6 +130,14 @@ export function ChatMessage({ message, onFeedback }: ChatMessageProps) {
                   aria-label="Not helpful"
                 >
                   <ThumbsDown className="w-4 h-4" />
+                </button>
+                <span className="text-muted-foreground/50">|</span>
+                <button
+                  onClick={onProvideFeedback}
+                  className="flex items-center gap-1 px-2 py-1 rounded-md hover:bg-secondary transition-colors text-xs text-muted-foreground hover:text-primary"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>Provide feedback</span>
                 </button>
               </div>
             ) : showFeedbackInput ? (
