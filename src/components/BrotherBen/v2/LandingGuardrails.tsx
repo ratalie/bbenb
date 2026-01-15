@@ -4,8 +4,8 @@ import { Heart, Users, HeartPulse, Eye } from "lucide-react";
 const guardrails = [
   {
     icon: Heart,
-    title: "Non-denominational & inclusive",
-    description: "Guidance is reflective and encouraging, not doctrinal instruction. All Christian traditions and seekers are welcome.",
+    title: "Built on ACC Content and the Bible",
+    description: "Guidance is grounded in Apostolic Christian Church teachings, scripture, and trusted resources like Around the Table and General Conference recordings.",
   },
   {
     icon: Users,
