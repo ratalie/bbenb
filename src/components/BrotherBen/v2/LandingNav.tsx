@@ -31,18 +31,23 @@ export const LandingNav = ({ onStartConversation }: LandingNavProps) => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <span className="text-primary font-serif font-bold text-sm">BB</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-primary font-serif font-bold text-sm">BB</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-serif font-semibold text-foreground leading-tight">
+                  Ask Brother Ben
+                </span>
+                <span className="text-[10px] text-muted-foreground leading-tight">
+                  by AC Church
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col">
-              <span className="font-serif font-semibold text-foreground leading-tight">
-                Ask Brother Ben
-              </span>
-              <span className="text-[10px] text-muted-foreground leading-tight">
-                by AC Church
-              </span>
-            </div>
+            <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded">
+              LLM V 1.0
+            </span>
           </div>
 
           {/* Desktop Nav */}
