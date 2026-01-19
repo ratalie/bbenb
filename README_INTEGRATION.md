@@ -12,6 +12,17 @@ natal/DCL/
 
 The frontend (`bbenb`) now connects to the Brother Ben backend API deployed on AWS API Gateway.
 
+### Backend Agent Configuration
+
+**Bedrock Agent**: BrotherBen (ID: `PLGO7CNWUR`)
+**Current Alias**: `ingested-v1` (ID: `BAVA5PWNNI`)
+**Agent Version**: 5
+**Foundation Model**: Claude Haiku 4.5
+
+The agent has 2 Knowledge Bases connected:
+- **knowledge-base-references** (Y7VVIQP9B5): Official ACCA doctrine documents
+- **knowledge-base-quick-start** (OGH5GDDL95): Monthly devotional articles 2022-2025
+
 ### Backend API Endpoints
 
 - **Base URL**: `https://v6nfnsyr8f.execute-api.us-east-1.amazonaws.com/prod`
