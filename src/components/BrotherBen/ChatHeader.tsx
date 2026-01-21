@@ -27,7 +27,7 @@ export function ChatHeader({ onReset, onShowOnboarding }: ChatHeaderProps) {
             </div>
           </div>
           <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded">
-            LLM V 1.0
+            LLM V 1.1
           </span>
         </div>
 
